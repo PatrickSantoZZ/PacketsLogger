@@ -147,6 +147,7 @@ module.exports = function PacketsLogger(mod) {
 		'S_ENABLE_DISABLE_SELLABLE_ITEM_LIST',
 		'S_AVAILABLE_EVENT_MATCHING_LIST',
 		'S_INVEN',
+		'S_VIEW_WARE_EX',
 		'S_UPDATE_ACHIEVEMENT_PROGRESS',
 		'S_SOCIAL',
 		'S_NPC_LOCATION',
@@ -357,7 +358,7 @@ module.exports = function PacketsLogger(mod) {
 		if (logPaste) {
 			return data.toString('hex')
 		} else {
-			return hexy.hexy(data)
+			return hexy.hexy(data, {format: "eights", offset: 4, caps: "upper", width: 32})
 		}
 	}
 
@@ -369,9 +370,13 @@ module.exports = function PacketsLogger(mod) {
 	function packetArrow(incoming) {
 		return incoming ? '<-' : '->'
 	}
+	
+	function internalType(data) {
+		return (data.$fake ? '[CRAFTED]	' : '') + (data.$silenced ? '[BLOCKED]	' : '') + (data.$modified ? '[EDITED]	' : '') + ( (!data.$fake && !data.$silenced && !data.$modified) ? '         	' : '')
+	}
 
 	function printUnknown(code, data, incoming, name) {
-		logFile.write(`${timestamp()} ${packetArrow(incoming)} (id ${code}) ${name}\n`);
+		logFile.write(`${timestamp()} ${packetArrow(incoming)} ${internalType(data)}    (id ${code}) ${name}\n`);
 		if (logRaw) {
 			logFile.write(hexDump(data) + '\n');
 			logFile.write(data.toString('hex') + '\n');
@@ -388,7 +393,7 @@ module.exports = function PacketsLogger(mod) {
 	function printKnown(name, packet, incoming, code, data, defPerhapsWrong) {
 		loopBigIntToString(packet);
 		let json = JSON.stringify(packet, null, 4);
-		logFile.write(`${timestamp()} ${packetArrow(incoming)} ${name} (id ${code}${defPerhapsWrong ? ', DEF WRONG!!!)' : ')'}\n`)
+		logFile.write(`${timestamp()} ${packetArrow(incoming)} ${internalType(data)} ${name}    (id ${code}${defPerhapsWrong ? ', DEF WRONG!!!)' : ')'}\n`)
 		if (logJson) logFile.write(json + '\n')
 		if (logRaw && (defPerhapsWrong || !logRawUnkOnly)) {
 			logFile.write(hexDump(data) + '\n');
