@@ -4,9 +4,7 @@ const util = require('util');
 module.exports = function PacketsLogger(mod) {
 	const command = mod.command;
 	const startTime = Date.now();
-	let logFile = fs.createWriteStream('tera-log.log', {
-		flags: 'a'
-	});
+	let logFile = null;
 	let logC = false;
 	let logS = false;
 	let logRaw = true;
@@ -484,11 +482,14 @@ module.exports = function PacketsLogger(mod) {
 	function disableHook() {
 		hookEnabled = false;
 		mod.unhook(hook);
-		logFile.write('<---- Hook DISABLED ---->\r\n');
+		logFile.end('<---- Hook DISABLED ---->\r\n');
 	}
 
 	function enableHook() {
 		hookEnabled = true;
+		logFile = fs.createWriteStream('tera-log.log', {
+			flags: 'a'
+		});
 		logFile.write('<---- Hook ENABLED ---->\r\n');
 		hook = mod.hook('*', 'raw', {
 			order: 999999,
