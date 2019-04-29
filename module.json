@@ -1,8 +1,10 @@
 {
-	"disableAutoUpdate": true,
+	"disableAutoUpdate": false,
+	"name": "PacketsLogger",
 	"options": {
-		"niceName": "PacketsLogger"
+		"niceName": "PacketsLogger",
+		"guiName": "PacketsLogger"
 	},
-	"servers": [""],
+	"servers": ["https://raw.githubusercontent.com/Owyn/PacketsLogger/master/"],
 	"supportUrl": "https://github.com/SoliaRdi/"
 }

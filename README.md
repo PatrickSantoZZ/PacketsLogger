@@ -9,3 +9,7 @@ Contains wide custom pre-enabled blacklist
 `logBlackClear` - clears blacklist of packets so everything would be logged (default blacklist is pretty massive)  
   
 <img src=http://u.cubeupload.com/Owyn/loggrproc.jpg>
+
+## Requirements
+
+Hexy node module https://github.com/a2800276/hexy.js
