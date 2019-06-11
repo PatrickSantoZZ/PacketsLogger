@@ -25,6 +25,7 @@ module.exports = function PacketsLogger(mod) {
 		'S_START_COOLTIME_SKILL',
 		'S_MOUNT_VEHICLE',
 		'S_SKILL_LIST',
+		'C_REQUEST_NONDB_ITEM_INFO',
 		'S_PARTY_MEMBER_QUEST_DATA',
 		'S_PARTY_MEMBER_STAT_UPDATE',
 		'S_INSTANCE_ARROW',
@@ -42,7 +43,6 @@ module.exports = function PacketsLogger(mod) {
 		'S_GUILD_INFO',
 		'S_USER_BLOCK_LIST',
 		'S_EVENT_QUEST_SUMMARY',
-		'S_DIALOG_EVENT',
 		'S_ACTION_STAGE',
 		'S_VIEW_PARTY_INVITE',
 		'S_UPDATE_FRIEND_INFO',
@@ -114,6 +114,7 @@ module.exports = function PacketsLogger(mod) {
 		'S_DESPAWN_USER',
 		'S_PING',
 		'C_PONG',
+		'C_REQUEST_GAMESTAT_PING',
 		'C_REQUEST_SEREN_GUIDE',
 		'C_NOTIFY_LOCATION_IN_ACTION',
 		'S_DEBUG_REMOTE_PROJECTILE_POS',
@@ -234,7 +235,7 @@ module.exports = function PacketsLogger(mod) {
 		'S_USER_LOCATION_IN_ACTION',
 		'S_PARTY_MEMBER_ABNORMAL_CLEAR',
 		'S_CHANGE_DESTPOS_PROJECTILE',
-		'S_QUEST_BALLOON',
+		'S_QUEST_BALLOON'
  ];
 
 	command.add('logC', () => {
@@ -405,8 +406,9 @@ module.exports = function PacketsLogger(mod) {
 			return true
 		}
 
-		let protocolVersion = mod.protocolVersion
-		let data2 = mod.dispatch.protocol.write(protocolVersion, name, '*', packet)
+		//let protocolVersion = mod.protocolVersion
+		//let data2 = mod.dispatch.protocol.write(protocolVersion, name, '*', packet)
+		let data2 = mod.dispatch.toRaw(name, '*', packet)
 		if ((data.length != data2.length) || !data.equals(data2)) {
 			return true
 		} else {
@@ -499,7 +501,7 @@ module.exports = function PacketsLogger(mod) {
 		}, (code, data, incoming, fake) => {
 			if (!logC && !logS) return
 
-			let protocolVersion = mod.protocolVersion
+			//let protocolVersion = mod.protocolVersion
 			let name = null
 			let packet = null
 
@@ -508,7 +510,8 @@ module.exports = function PacketsLogger(mod) {
 
 			if (name) {
 				try {
-					packet = mod.dispatch.protocol.parse(protocolVersion, code, '*', data)
+					//packet = mod.dispatch.protocol.parse(protocolVersion, code, '*', data)
+					packet = mod.dispatch.fromRaw(code, '*', data)
 				} catch (e) {
 					packet = null
 				}
