@@ -409,7 +409,7 @@ module.exports = function PacketsLogger(mod) {
 		//let protocolVersion = mod.protocolVersion
 		//let data2 = mod.dispatch.protocol.write(protocolVersion, name, '*', packet)
 		let data2 = mod.dispatch.toRaw(name, '*', packet)
-		if ((data.length != data2.length) || !data.equals(data2)) {
+		if ((data.length != data2.length)) {
 			return true
 		} else {
 			return false
