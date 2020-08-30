@@ -1,0 +1,8 @@
+{
+    "name": "packets-logger",
+    "title": "Packets-Logger",
+    "author": "Owyn / Solardi / Nekonekoo",
+    "description": "Packet logger for TERA Proxy",
+    "update": "github:PatrickSantoZZ/PacketsLogger",
+    "disableAutoUpdate": false
+  }

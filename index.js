@@ -2,7 +2,7 @@ const hexy = require('hexy')
 const fs = require('fs');
 const util = require('util');
 module.exports = function PacketsLogger(mod) {
-	const command = mod.command;
+	const { command } = mod.require;
 	const startTime = Date.now();
 	let logFile = null;
 	let logC = false;
@@ -240,7 +240,7 @@ module.exports = function PacketsLogger(mod) {
 
 	command.add('logC', () => {
 		logC = !logC;
-		command.message(`Client packet logging is now ${logC ? 'enabled' : 'disabled'}.`)
+		log(`Client packet logging is now ${logC ? 'enabled' : 'disabled'}.`)
 		if (!logC && !logS && hookEnabled) disableHook();
 		if ((logC || logS) && !hookEnabled) enableHook();
 
@@ -248,7 +248,7 @@ module.exports = function PacketsLogger(mod) {
 
 	command.add('logS', () => {
 		logS = !logS;
-		command.message(`Server packet logging is now ${logS ? 'enabled' : 'disabled'}.`);
+		log(`Server packet logging is now ${logS ? 'enabled' : 'disabled'}.`);
 		if (!logC && !logS && hookEnabled) disableHook();
 		if ((logC || logS) && !hookEnabled) enableHook();
 	});
@@ -271,17 +271,17 @@ module.exports = function PacketsLogger(mod) {
 			logRawUnkOnly = false
 		}
 
-		command.message(`Raw packet logging is now ${logRaw ? 'enabled' : 'disabled'}${logRawUnkOnly ? ' (only unknown packets)' : ''}.`)
+		log(`Raw packet logging is now ${logRaw ? 'enabled' : 'disabled'}${logRawUnkOnly ? ' (only unknown packets)' : ''}.`)
 	});
 
 	command.add('logJson', () => {
 		logJson = !logJson
-		command.message(`Json packet logging is now ${logJson ? 'enabled' : 'disabled'}.`)
+		log(`Json packet logging is now ${logJson ? 'enabled' : 'disabled'}.`)
 	});
 
 	command.add('logPaste', () => {
 		logPaste = !logPaste
-		command.message(`Raw packet pasting format is now ${logPaste ? 'enabled' : 'disabled'}.`)
+		log(`Raw packet pasting format is now ${logPaste ? 'enabled' : 'disabled'}.`)
 	});
 
 	command.add('logUnk', (arg) => {
@@ -302,7 +302,7 @@ module.exports = function PacketsLogger(mod) {
 			logUnkOnly = false
 		}
 
-		command.message(`Unknown packet logging is now ${logUnk ? 'enabled' : 'disabled'}${logUnkOnly ? ' (only)' : ''}.`)
+		log(`Unknown packet logging is now ${logUnk ? 'enabled' : 'disabled'}${logUnkOnly ? ' (only)' : ''}.`)
 	});
 	command.add('recreate', () => {
 		logFile = fs.createWriteStream('tera-log.log', {
@@ -315,36 +315,36 @@ module.exports = function PacketsLogger(mod) {
 
 		if (searchExpr !== null) {
 			searchExpr = '' + searchExpr
-			command.message(`Logger search expression set to: ${searchExpr}`);
+			log(`Logger search expression set to: ${searchExpr}`);
 		} else {
-			command.message(`Logger search disabled.`);
+			log(`Logger search disabled.`);
 		}
 	});
 
 	command.add('logBlack', (name) => {
 		if (name === null || name === undefined) {
-			command.message('Invalid');
+			log('Invalid');
 			return
 		}
 		var index = blacklist.indexOf(name);
 		if (index > -1) {
 			blacklist.splice(index, 1);
-			command.message('Now showing ' + name + '.');
+			log('Now showing ' + name + '.');
 		} else {
 			blacklist.push('' + name);
-			command.message('Now hiding ' + name + '.');
+			log('Now hiding ' + name + '.');
 		}
 	});
 
 	command.add('logBlackShow', (name) => {
 		for (let item of blacklist) {
-			command.message(item)
+			log(item)
 		}
 	});
 
 	command.add('logBlackClear', (name) => {
 		blacklist = []
-		command.message(`Logger blacklist cleared.`)
+		log(`Logger blacklist cleared.`)
 	})
 
 	function pad(n, l, c = '0') {
@@ -397,8 +397,8 @@ module.exports = function PacketsLogger(mod) {
 			logFile.write(data.toString('hex') + '\n');
 		}
 	}
-
-	function isDefPerhapsWrong(name, packet, incoming, data) {
+/*
+	function isDefPerhapsWrong(name, code , defVersion, packet, incoming, data) {
 		if (incoming && name.slice(0, 2) === 'C_') {
 			return true
 		}
@@ -406,16 +406,14 @@ module.exports = function PacketsLogger(mod) {
 			return true
 		}
 
-		//let protocolVersion = mod.protocolVersion
-		//let data2 = mod.dispatch.protocol.write(protocolVersion, name, '*', packet)
-		let data2 = mod.dispatch.toRaw(name, '*', packet)
+		let data2 = mod.dispatch.hook(name, '*', packet)
 		if ((data.length != data2.length)) {
 			return true
 		} else {
 			return false
 		}
 	}
-
+*/
 	function shouldPrintKnownPacket(name, code, incoming) {
 		if (logUnk && logUnkOnly) return false
 
@@ -505,19 +503,23 @@ module.exports = function PacketsLogger(mod) {
 			let name = null
 			let packet = null
 
-			name = mod.dispatch.protocolMap.code.get(code);
+			name = mod.dispatch.protocol.packetEnum.code.get(code);
+			const defs = name && mod.dispatch.protocol.constructor.defs.get(name),
+			defVersion = defs && Math.max(...defs.keys());
+
 			if (name === undefined) name = null;
 
 			if (name) {
 				try {
-					//packet = mod.dispatch.protocol.parse(protocolVersion, code, '*', data)
-					packet = mod.dispatch.fromRaw(code, '*', data)
+					packet = mod.parse(code, defVersion, data)
+					//packet = mod.dispatch.fromRaw(code, '*', data) old owyn version
 				} catch (e) {
 					packet = null
 				}
 
 				if (packet) {
-					let defPerhapsWrong = isDefPerhapsWrong(name, packet, incoming, data)
+					//let defPerhapsWrong = isDefPerhapsWrong(name, packet, code , defVersion, incoming, data)
+					let defPerhapsWrong = mod.packetLength(code, defVersion, packet) !== data.length
 					if (shouldPrintKnownPacket(name, code, incoming)) {
 						printKnown(name, packet, incoming, code, data, defPerhapsWrong)
 					}
@@ -535,6 +537,14 @@ module.exports = function PacketsLogger(mod) {
 	this.destructor = function () {
 		if (logS || logC) {
 			logFile.write('<---- TERA proxy UNLOADED ---->\r\n');
+		}
+	}
+	const config = { enableClientlessMode: !!(mod.dispatch.cli) };
+	function log(msg) {
+		if(config.enableClientlessMode) {
+			mod.log(msg)
+		} else {
+			command.message(msg);
 		}
 	}
 };
