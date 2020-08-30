@@ -1,7 +1,15 @@
 {
-	"files": {
-		"README.md": "e1c31164ecdfc7ba4870d257ba039e4829cb831b99cabb70418aea1bd9db3c1a",
-		"index.js": "00c8cc0e85fe786f59e0c3a1d362b21446e21e6a99f0534d26bcd53e9d05df67",
-		"module.json": "bed7103acc1ad9a3f22a81b24a0855e7099a0377e34f47d120299eee5013a518"
-	}
+    "data": {
+        "README.md": "4cMRZOzfx7pIcNJXugOeSCnLgxuZyrtwQYrqG9nbPBo=",
+        "index.js": "AMjMDoX+eG9Z4MOh02KyFEbiHmqZ8FNNJrzVPp0F32c=",
+        "module.json": "vtcQOswa2aPyKoGySghV5wmaA3fjT0fRICme7lATpRg="
+    },
+    "url": "https://raw.githubusercontent.com/Owyn/PacketsLogger/master/",
+    "etag": "W/\"fcfef39a52bcdf142a052d66f5c232492ad7b582ddf1d94ef79182c074514c3e\"",
+    "files": {
+        "README.md": "7a1454243184bbefae6251b6b2c4931cd465c4a173aa55525717836a4d66c1ed",
+        "index.js": "c587b97eb191213a864dcf1b547ef78889249abbf748059961066741e16c1b4c",
+        "mod.json": "f91471b17c46e763f29777bee941cb57ddc6f9c59402ba742368409aada496da",
+        "module.json": "7761ff89f0c808ee11ae506a233eddb76d74e998c9b85d00b7c55ed5433b67e8"
+    }
 }

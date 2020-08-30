@@ -1,6 +1,7 @@
 # PacketsLogger  
 Logs saves to file in proxy dir  
 Contains wide custom pre-enabled blacklist  
+Only supports TERA-Proxy get it here https://github.com/tera-proxy/tera-proxy
   
 ## Main commands  
   
@@ -12,4 +13,5 @@ Contains wide custom pre-enabled blacklist
 
 ## Requirements
 
-Hexy node module https://github.com/a2800276/hexy.js
+Hexy node module https://github.com/a2800276/hexy.js  
+TERA Proxy https://github.com/tera-proxy/tera-proxy  
